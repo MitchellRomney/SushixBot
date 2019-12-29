@@ -1,7 +1,10 @@
 import json
+from datetime import datetime
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+
+from Twitch.models import TwitchChatMessage, TwitchUser
 
 
 class TwitchChatConsumer(WebsocketConsumer):
@@ -24,14 +27,14 @@ class TwitchChatConsumer(WebsocketConsumer):
         )
 
     def receive(self, text_data=None, bytes_data=None):
-        print(text_data)
+        data = json.loads(text_data)
+        if data["type"] == "message":
+            self.save_message(data["data"])
 
-    def send_notification(self, event):
-        message = event['message']
-        data = event['data'] if 'data' in event else None
-
-        # Send message to WebSocket
-        self.send(text_data=json.dumps({
-            'message': message,
-            'data': data
-        }))
+    @staticmethod
+    def save_message(message):
+        TwitchChatMessage.objects.create(
+            twitch_user=TwitchUser.objects.get(twitch_id=message["user_id"]),
+            message=message["message"],
+            timestamp=datetime.strptime(message["timestamp"], '%Y-%m-%d %H:%M:%S.%f')
+        )

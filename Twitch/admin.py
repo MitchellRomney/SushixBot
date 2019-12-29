@@ -52,8 +52,31 @@ class StreamMinuteFrameAdmin(admin.ModelAdmin):
         return self.chatters.count()
 
 
+class TwitchChatMessageAdmin(admin.ModelAdmin):
+    model = TwitchChatMessage
+
+    list_display = (
+        'id',
+        'twitch_user',
+        'timestamp'
+    )
+
+    list_select_related = (
+        'twitch_user',
+    )
+
+    readonly_fields = (
+        'twitch_user',
+        'message',
+        'timestamp',
+        'date_modified',
+        'date_created',
+    )
+
+
 admin.site.register(TwitchUser, TwitchUserAdmin)
 admin.site.register(Game, GameAdmin)
 admin.site.register(TwitchVideo, TwitchVideoAdmin)
 admin.site.register(StreamMinuteFrame, StreamMinuteFrameAdmin)
+admin.site.register(TwitchChatMessage, TwitchChatMessageAdmin)
 admin.site.unregister(Group)

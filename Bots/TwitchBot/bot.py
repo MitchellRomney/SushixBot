@@ -1,39 +1,17 @@
 import json
 import os
-import time
-
-import websocket
-
-try:
-    import thread
-except ImportError:
-    import _thread as thread
+import asyncio
+import websockets
 
 from dotenv import load_dotenv
 from twitchio.ext import commands
 
 
-class Websocket:
-
-    async def run(self):
-        await self.ws.run_forever()
-
-    async def on_message(self, ws, message):
-        print(message)
-
-    def __init__(self):
-        websocket.enableTrace(True)
-        ws = websocket.WebSocketApp(
-            "ws://localhost:8040/",
-            on_message=self.on_message,
-        )
-        self.ws = ws
-        self.run()
-
-
 class TwitchBot(commands.Bot):
     def __init__(self):
         load_dotenv()
+        self.ws_url = os.getenv("API_WS_URL")
+        self.ws = None
         super().__init__(
             irc_token=os.getenv("TWITCH_IRC_TOKEN"),
             client_id=os.getenv("TWITCH_CLIENT_SECRET"),
@@ -41,9 +19,12 @@ class TwitchBot(commands.Bot):
             prefix='!',
             initial_channels=['ItsSushix']
         )
-        self.socket = Websocket()
+
+    async def start_websocket(self):
+        self.ws = await websockets.connect(self.ws_url)
 
     async def event_ready(self):
+        await self.start_websocket()
         print(f'Ready | {self.nick}')
 
     async def event_message(self, message):
@@ -56,7 +37,8 @@ class TwitchBot(commands.Bot):
                 'timestamp': str(message.timestamp)
             }
         })
-        self.socket.ws.send(payload)
+        await self.ws.ping()
+        await self.ws.send(payload)
         await self.handle_commands(message)
 
     # Commands use a different decorator
