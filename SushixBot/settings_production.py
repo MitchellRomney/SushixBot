@@ -7,7 +7,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ALLOWED_HOSTS = [
     'api.sushix.tv',
-    'sushixtv-backend.herokuapp.com/'
+    'sushixtv-backend.herokuapp.com'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = False
