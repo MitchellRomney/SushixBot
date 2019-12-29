@@ -8,18 +8,27 @@ def create_stream_minute_frame(user_id, chatters):
     headers = {'Client-Id': TWITCH_CLIENT_ID}
     response = requests.get(f'https://api.twitch.tv/helix/streams?user_id={user_id}', headers=headers).json()
 
-    for stream in response["data"]:
-        live = True if stream["type"] == "live" else False
-        game, created = Game.objects.get_or_create(game_id=stream["game_id"])
+    live = False
+    viewers = 0
+    game = None
+    print(response)
+    if len(response["data"]) > 0:
+        print(1)
+        for stream in response["data"]:
+            print(2)
+            live = True if stream["type"] == "live" else False
+            game, created = Game.objects.get_or_create(game_id=stream["game_id"])
+            viewers = stream["viewer_count"]
 
-        stream_minute_frame = StreamMinuteFrame.objects.create(
-            twitch_user=TwitchUser.objects.get(twitch_id=user_id),
-            viewers=stream["viewer_count"],
-            live=live,
-            game=game,
-        )
-        stream_minute_frame.chatters.add(*chatters)
-        new_frame.send(sender=None, instance=stream_minute_frame, live=live)
+    stream_minute_frame = StreamMinuteFrame.objects.create(
+        twitch_user=TwitchUser.objects.get(twitch_id=user_id),
+        viewers=viewers,
+        live=live,
+        game=game,
+    )
+    stream_minute_frame.chatters.add(*chatters)
+    print(stream_minute_frame)
+    new_frame.send(sender=None, instance=stream_minute_frame, live=live)
 
 
 def fetch_chatters():

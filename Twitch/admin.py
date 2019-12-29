@@ -42,9 +42,14 @@ class StreamMinuteFrameAdmin(admin.ModelAdmin):
 
     list_display = (
         'date_created',
+        'chatters_count',
         'viewers',
-        'live'
+        'live',
     )
+
+    @staticmethod
+    def chatters_count(self):
+        return self.chatters.count()
 
 
 admin.site.register(TwitchUser, TwitchUserAdmin)
