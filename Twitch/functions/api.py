@@ -11,11 +11,8 @@ def create_stream_minute_frame(user_id, chatters):
     live = False
     viewers = 0
     game = None
-    print(response)
     if len(response["data"]) > 0:
-        print(1)
         for stream in response["data"]:
-            print(2)
             live = True if stream["type"] == "live" else False
             game, created = Game.objects.get_or_create(game_id=stream["game_id"])
             viewers = stream["viewer_count"]
