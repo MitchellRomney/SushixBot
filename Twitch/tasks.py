@@ -1,6 +1,6 @@
 from SushixBot.celery import app
-from Twitch.functions.api import fetch_chatters, get_users, create_stream_minute_frame
-from Twitch.models import *
+from Twitch.functions.api import fetch_chatters, get_users, create_stream_minute_frame, fetch_followers, fetch_subscribers
+from Twitch.models import TwitchUser
 
 
 @app.task
@@ -19,3 +19,12 @@ def fetch_stream_state():
 
     create_stream_minute_frame('27626321', TwitchUser.objects.filter(login__in=chatters))
 
+
+@app.task
+def fetch_stats():
+    followers = fetch_followers('27626321')
+    subscribers = fetch_subscribers('27626321')
+    user = TwitchUser.objects.get(display_name='ItsSushix')
+    user.follower_count = followers
+    user.subscriber_count = subscribers
+    user.save()

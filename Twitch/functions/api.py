@@ -1,5 +1,5 @@
 import requests
-from SushixBot.settings import TWITCH_CLIENT_ID
+from SushixBot.settings import TWITCH_CLIENT_ID, SUSHIX_BEARER_TOKEN
 from Twitch.models import *
 from Twitch.signals import new_frame
 
@@ -24,7 +24,6 @@ def create_stream_minute_frame(user_id, chatters):
         game=game,
     )
     stream_minute_frame.chatters.add(*chatters)
-    print(stream_minute_frame)
     new_frame.send(sender=None, instance=stream_minute_frame, live=live)
 
 
@@ -34,6 +33,30 @@ def fetch_chatters():
     for category in response["chatters"]:
         chatters += response["chatters"][category]
     return chatters
+
+
+def fetch_followers(user_id):
+    headers = {
+        'Client-Id': TWITCH_CLIENT_ID
+    }
+    response = requests.get(f'https://api.twitch.tv/helix/users/follows?to_id={user_id}', headers=headers).json()
+    return response["total"]
+
+
+def fetch_subscribers(user_id):
+    headers = {
+        'Client-Id': TWITCH_CLIENT_ID,
+        'Authorization': f'Bearer {SUSHIX_BEARER_TOKEN}'
+    }
+    response = requests.get(f'https://api.twitch.tv/helix/subscriptions?broadcaster_id={user_id}&first=100', headers=headers).json()
+    total = len(response["data"])
+
+    while len(response["data"]) == 100:
+        cursor = response["pagination"]["cursor"]
+        response = requests.get(f'https://api.twitch.tv/helix/subscriptions?broadcaster_id={user_id}&first=100&after={cursor}', headers=headers).json()
+        total += len(response["data"])
+
+    return total - 1
 
 
 def get_users(username_list):

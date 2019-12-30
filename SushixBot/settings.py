@@ -10,6 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('SECRET_KEY')
 TWITCH_CLIENT_ID = env('TWITCH_CLIENT_ID')
 TWITCH_CLIENT_SECRET = env('TWITCH_CLIENT_SECRET')
+SUSHIX_BEARER_TOKEN = env('SUSHIX_BEARER_TOKEN')
 
 DEBUG = True
 
@@ -115,9 +116,13 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Australia/Melbourne'
 CELERY_BEAT_SCHEDULE = {
-    'task_update_stats': {
+    'task_get_stream_state': {
         'task': 'Twitch.tasks.fetch_stream_state',
         'schedule': crontab(minute='*/1'),
+    },
+    'task_update_stats': {
+        'task': 'Twitch.tasks.fetch_stats',
+        'schedule': crontab(minute='*/5'),
     },
 }
 
