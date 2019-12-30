@@ -5,6 +5,8 @@ import websockets
 from dotenv import load_dotenv
 from twitchio.ext import commands
 
+import queries
+
 
 class TwitchBot(commands.Bot):
     def __init__(self):
@@ -32,18 +34,29 @@ class TwitchBot(commands.Bot):
             'data': {
                 'message': message.content,
                 'user_id': message.author.id,
+                'username': message.author.name,
                 'raw': message.raw_data,
                 'timestamp': str(message.timestamp)
             }
         })
-        await self.ws.ping()
-        await self.ws.send(payload)
+
+        try:
+            await self.ws.send(payload)
+        except websockets.exceptions.ConnectionClosedError:
+            await self.start_websocket()
+            await self.ws.send(payload)
+
         await self.handle_commands(message)
 
     # Commands use a different decorator
     @commands.command(name='test')
-    async def my_command(self, ctx):
-        await ctx.send(f'Hello {ctx.author.name}!')
+    async def top_points__command(self, ctx):
+        message = queries.query_leaderboard
+        # top_users = TwitchUser.objects.filter(bot=False).order_by('-loyalty_points')[:10]
+        # message = 'Top 10 SushiRolls:'
+        # for (user, index) in top_users:
+        # message += f' {index + 1}. {user.display_name} ({user.loyalty_points}){i:{"," if index < 9 else ""}}'
+        await ctx.send(f'{message}')
 
 
 if __name__ == '__main__':

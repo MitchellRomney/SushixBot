@@ -5,6 +5,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
 from Twitch.models import TwitchChatMessage, TwitchUser
+from Twitch.functions.api import get_users
 
 
 class TwitchChatConsumer(WebsocketConsumer):
@@ -33,6 +34,9 @@ class TwitchChatConsumer(WebsocketConsumer):
 
     @staticmethod
     def save_message(message):
+        if TwitchUser.objects.filter(twitch_id=message["user_id"]).count() == 0:
+            get_users([message["username"], ])
+
         TwitchChatMessage.objects.create(
             twitch_user=TwitchUser.objects.get(twitch_id=message["user_id"]),
             message=message["message"],

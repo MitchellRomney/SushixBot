@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.defaultfilters import truncatechars
 
 
 class TwitchUser(models.Model):
@@ -80,6 +81,10 @@ class StreamMinuteFrame(models.Model):
     def __str__(self):
         return self.date_created.strftime("%a %d %B %Y %H:%M")
 
+    @property
+    def chatters_count(self):
+        return self.chatters.count()
+
 
 class TwitchChatMessage(models.Model):
     twitch_user = models.ForeignKey(TwitchUser, related_name="TwitchChatMessage_TwitchUsers", on_delete=models.CASCADE)
@@ -88,3 +93,7 @@ class TwitchChatMessage(models.Model):
 
     date_modified = models.DateTimeField(auto_now=True, blank=False)
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
+
+    @property
+    def short_message(self):
+        return truncatechars(self.message, 100)

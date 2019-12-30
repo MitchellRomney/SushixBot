@@ -47,10 +47,6 @@ class StreamMinuteFrameAdmin(admin.ModelAdmin):
         'live',
     )
 
-    @staticmethod
-    def chatters_count(self):
-        return self.chatters.count()
-
 
 class TwitchChatMessageAdmin(admin.ModelAdmin):
     model = TwitchChatMessage
@@ -58,6 +54,7 @@ class TwitchChatMessageAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'twitch_user',
+        'short_message',
         'timestamp'
     )
 
