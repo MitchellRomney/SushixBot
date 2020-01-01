@@ -1,5 +1,11 @@
 query_leaderboard = (
-    f'''
-    {1 + 2} leaderboard
+    '''
+    query getLeaderboard($metric: String!){
+        leaderboard(metric: $metric){
+            displayName
+            minutesWatched
+            loyaltyPoints
+            }
+        }
     '''
 )

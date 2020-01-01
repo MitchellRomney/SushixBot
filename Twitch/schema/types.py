@@ -4,12 +4,17 @@ from django.contrib.auth.models import User
 from graphene_django.types import DjangoObjectType
 from graphql_jwt.utils import jwt_encode, jwt_payload
 
-from Twitch.models import TwitchUser, Profile
+from Twitch.models import TwitchUser, Profile, TwitchChatMessage
 
 
 class TwitchUserType(DjangoObjectType):
+    messages_count = graphene.Int()
+
     class Meta:
         model = TwitchUser
+
+    def resolve_messages_count(self, info):
+        return TwitchChatMessage.objects.filter(twitch_user=self).count()
 
 
 class UserType(DjangoObjectType):

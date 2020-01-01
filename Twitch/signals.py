@@ -32,7 +32,7 @@ def stream_minute_frame_update(sender, instance, live, **kwargs):
         user_updated = False
 
         # Add 2 loyalty points if user has been active in the chat.
-        if user.id in active_chatters and live:
+        if (instance.date_created.minute % 5) and user.id in active_chatters and live:
             points += 2
 
         if points > 0:

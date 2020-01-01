@@ -1,9 +1,11 @@
 import json
 import os
 import websockets
+import requests
 
 from dotenv import load_dotenv
 from twitchio.ext import commands
+from twitchio.webhook import UserFollows
 
 import queries
 
@@ -49,13 +51,26 @@ class TwitchBot(commands.Bot):
         await self.handle_commands(message)
 
     # Commands use a different decorator
-    @commands.command(name='test')
+    @commands.command(name='top')
     async def top_points__command(self, ctx):
-        message = queries.query_leaderboard
-        # top_users = TwitchUser.objects.filter(bot=False).order_by('-loyalty_points')[:10]
-        # message = 'Top 10 SushiRolls:'
-        # for (user, index) in top_users:
-        # message += f' {index + 1}. {user.display_name} ({user.loyalty_points}){i:{"," if index < 9 else ""}}'
+        query = queries.query_leaderboard
+        url = 'https://api.sushix.tv/graphql'
+        response = requests.post(url, json={
+            'query': query,
+            'variables': {
+                'metric': 'loyalty_points'
+            }
+        }).json()
+
+        message = ''
+        position = 0
+        leaderboard = response['data']['leaderboard'][:10]
+
+        for user in leaderboard:
+            position += 1
+            message += f'#{position}. {user["displayName"]} ({user["loyaltyPoints"]})'
+            if position != 10:
+                message += ', '
         await ctx.send(f'{message}')
 
 
