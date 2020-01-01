@@ -37,11 +37,11 @@ def stream_minute_frame_update(sender, instance, live, **kwargs):
 
         if points > 0:
             user.loyalty_points += points
-            users_updated = True
+            user_updated = True
 
         if live:
             user.minutes_watched += 1
-            users_updated = True
+            user_updated = True
 
         if user_updated:
             users_updated.append(user)
