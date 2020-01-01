@@ -1,5 +1,19 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.template.defaultfilters import truncatechars
+
+
+class Profile(models.Model):
+    user = models.ForeignKey(User, related_name="Profile_Users", on_delete=models.CASCADE, blank=False)
+    twitch_user = models.ForeignKey('TwitchUser', related_name="Profile_TwitchUsers", on_delete=models.CASCADE, blank=False)
+    email_confirmed = models.BooleanField(default=False)
+
+    archived = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add=True, blank=False)
+    date_modified = models.DateTimeField(auto_now=True, blank=False)
+
+    def __str__(self):
+        return self.user.username
 
 
 class TwitchUser(models.Model):
@@ -8,7 +22,7 @@ class TwitchUser(models.Model):
     display_name = models.CharField(max_length=255, blank=False, null=False)
     type = models.CharField(max_length=255, blank=True, null=True)
     broadcaster_type = models.CharField(max_length=255, blank=True, null=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     profile_image_url = models.URLField(blank=True, null=True)
     offline_image_url = models.URLField(blank=True, null=True)
     view_count = models.IntegerField(default=0, blank=False, null=False)

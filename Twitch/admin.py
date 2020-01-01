@@ -1,6 +1,15 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
-from Twitch.models import *
+from Twitch.models import Profile, TwitchChatMessage, TwitchUser, TwitchVideo, StreamMinuteFrame, Game
+
+
+class ProfileAdmin(admin.ModelAdmin):
+    model = Profile
+
+    list_display = (
+        'user',
+        'twitch_user'
+    )
 
 
 class TwitchUserAdmin(admin.ModelAdmin):
@@ -16,7 +25,13 @@ class TwitchUserAdmin(admin.ModelAdmin):
         'view_count',
         'follower_count',
         'subscriber_count',
+        'date_modified',
         'date_created'
+    )
+
+    search_fields = (
+        'display_name',
+        'twitch_id'
     )
 
 
@@ -76,4 +91,5 @@ admin.site.register(Game, GameAdmin)
 admin.site.register(TwitchVideo, TwitchVideoAdmin)
 admin.site.register(StreamMinuteFrame, StreamMinuteFrameAdmin)
 admin.site.register(TwitchChatMessage, TwitchChatMessageAdmin)
+admin.site.register(Profile, ProfileAdmin)
 admin.site.unregister(Group)

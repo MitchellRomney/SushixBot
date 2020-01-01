@@ -1,7 +1,9 @@
 import graphene
+from django.contrib.auth.models import User
 
-from Twitch.schema.types import TwitchUserType, GlobalStatisticsType
-from Twitch.models import *
+from Twitch.schema.types import TwitchUserType, GlobalStatisticsType, ProfileType, UserType
+from Twitch.schema.mutations import TwitchLogin, SetUserLoyalty
+from Twitch.models import TwitchUser, Profile
 
 
 class Query(object):
@@ -18,6 +20,26 @@ class Query(object):
     statistics = graphene.Field(
         GlobalStatisticsType
     )
+
+    user = graphene.Field(
+        UserType,
+        user_id=graphene.Int(),
+        username=graphene.String()
+    )
+
+    profile = graphene.Field(
+        ProfileType,
+        user_id=graphene.Int()
+    )
+
+    @staticmethod
+    def resolve_user(self, info, **kwargs):
+        return User.objects.get(id=kwargs.get('user_id')) if kwargs.get('user_id') is not None else \
+            User.objects.get(username=kwargs.get('username'))
+
+    @staticmethod
+    def resolve_profile(self, info, **kwargs):
+        return Profile.objects.get(user__id=kwargs.get('user_id'))
 
     @staticmethod
     def resolve_twitch_user(self, info, **kwargs):
@@ -47,3 +69,7 @@ class Query(object):
             messages_count=messages_count
         )
 
+
+class Mutation(graphene.ObjectType):
+    twitchLogin = TwitchLogin.Field()
+    setUserLoyalty = SetUserLoyalty.Field()

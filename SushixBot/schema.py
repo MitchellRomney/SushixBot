@@ -1,5 +1,6 @@
 import graphene
-from Twitch.schema.schema import Query
+
+from Twitch.schema.schema import Mutation, Query
 
 
 class Query(Query, graphene.ObjectType):
@@ -7,4 +8,9 @@ class Query(Query, graphene.ObjectType):
     pass
 
 
-schema = graphene.Schema(query=Query)
+class Mutation(Mutation, graphene.ObjectType):
+
+    pass
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)

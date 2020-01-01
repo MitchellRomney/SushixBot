@@ -59,8 +59,37 @@ def fetch_subscribers(user_id):
     return total - 1
 
 
-def get_users(username_list):
+def get_twitch_user(twitch_id=None, username=None):
     url = f'https://api.twitch.tv/helix/users?'
+    headers = {
+        'Client-Id': TWITCH_CLIENT_ID
+    }
+
+    if twitch_id:
+        url += f'id={twitch_id}'
+
+    elif username:
+        url += f'login={username}&'
+
+    response = requests.get(url, headers=headers).json()
+    user = response['data'][0]
+
+    return TwitchUser.objects.create(
+        twitch_id=user['id'],
+        login=user['login'],
+        display_name=user['display_name'],
+        type=user['type'],
+        broadcaster_type=user['broadcaster_type'],
+        description=user['description'],
+        profile_image_url=user['profile_image_url'],
+        offline_image_url=user['offline_image_url'],
+        view_count=user['view_count']
+    )
+
+
+def get_users(username_list):
+    existing_twitch_users = list(TwitchUser.objects.all().values_list('twitch_id', flat=True))
+
     headers = {
         'Client-Id': TWITCH_CLIENT_ID
     }
@@ -71,30 +100,34 @@ def get_users(username_list):
     total_users = []
 
     while total_count != total_user_count:
-        for username in username_list[(page - 100):(page + 1)]:
+        url = f'https://api.twitch.tv/helix/users?'
+
+        for username in username_list[(page - 100):page]:
             url += f'login={username}&'
             total_count += 1
-        page += 100
 
+        page += 100
         response = requests.get(url, headers=headers).json()
         total_users += response['data']
 
     arr = []
 
     for user in total_users:
-        arr.append(TwitchUser(
-            twitch_id=user['id'],
-            login=user['login'],
-            display_name=user['display_name'],
-            type=user['type'],
-            broadcaster_type=user['broadcaster_type'],
-            description=user['description'],
-            profile_image_url=user['profile_image_url'],
-            offline_image_url=user['offline_image_url'],
-            view_count=user['view_count']
-        ))
+        if int(user['id']) not in existing_twitch_users:
+            arr.append(TwitchUser(
+                twitch_id=user['id'],
+                login=user['login'],
+                display_name=user['display_name'],
+                type=user['type'],
+                broadcaster_type=user['broadcaster_type'],
+                description=user['description'],
+                profile_image_url=user['profile_image_url'],
+                offline_image_url=user['offline_image_url'],
+                view_count=user['view_count']
+            ))
 
     if len(arr) > 0:
         TwitchUser.objects.bulk_create(arr)
 
+    return True
 

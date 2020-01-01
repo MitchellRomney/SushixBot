@@ -9,19 +9,18 @@ from Twitch.functions.api import get_users
 
 
 class TwitchChatConsumer(WebsocketConsumer):
-    def connect(self):
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.room_group_name = 'twitch_chat'
 
+    def connect(self):
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
             self.channel_name
         )
-
         self.accept()
 
     def disconnect(self, close_code):
-        # Leave room group
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name,
             self.channel_name
