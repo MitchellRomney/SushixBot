@@ -29,17 +29,24 @@ class TwitchBot(commands.Bot):
         await self.start_websocket()
         print(f'Ready | {self.nick}')
 
+    async def event_usernotice_subscription(self, metadata):
+        print(metadata)
+
     async def event_message(self, message):
         tags = {}
+        print(message.raw_data.split(';'))
         for tag in message.raw_data.split(';'):
             tag_split = tag.split('=')
             tag_key = tag_split[0]
             tags[tag_key] = {}
+            print(tag_split)
             if len(tag_split) > 1:
                 tag_values = tag_split[1].split(',')
                 for key in tag_values:
                     if len(key.split('/')) > 1:
                         tag_values_split = key.split('/')
+                        print(tag_values_split)
+                        print(tag_values_split[1])
                         tags[tag_key][tag_values_split[0]] = tag_values_split[1]
                     else:
                         tags[tag_key] = key

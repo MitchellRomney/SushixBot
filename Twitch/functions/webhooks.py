@@ -1,17 +1,18 @@
 import requests
 
+from Twitch.functions.redis import get_app_oath_key
+
 
 def get_current_webhooks():
     url = 'https://api.twitch.tv/helix/webhooks/subscriptions'
     headers = {
-        "Authorization": "Bearer qrdtg7k3wng14dfvznz0b1l3izgcot"
+        "Authorization": f"Bearer {get_app_oath_key()}"
     }
     response = requests.get(url, headers=headers).json()
     subscriptions = []
 
     if response["data"]:
-        for key in response["data"]:
-            subscription = response["data"][key]
+        for subscription in response["data"]:
             if subscription["callback"] == "https://api.sushix.tv/twitch/followers":
                 subscriptions.append("Followers")
 
@@ -28,7 +29,7 @@ def subscribe_followers_webhook():
     }
 
     headers = {
-        "Authorization": "Bearer qrdtg7k3wng14dfvznz0b1l3izgcot"
+        "Authorization": f"Bearer {get_app_oath_key()}"
     }
 
     requests.post(url, data=body, headers=headers)

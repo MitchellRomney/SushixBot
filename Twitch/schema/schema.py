@@ -1,5 +1,4 @@
 import graphene
-import redis
 from django.contrib.auth.models import User
 
 from Twitch.schema.types import TwitchUserType, GlobalStatisticsType, ProfileType, UserType
