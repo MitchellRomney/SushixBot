@@ -12,6 +12,8 @@ def setup_webhooks(sender=None, conf=None, **kwargs):
     # Clean out old queue
     app.control.purge()
 
+    print('Celery Queue Purged...')
+
     followers_webhook()
 
 

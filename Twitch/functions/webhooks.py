@@ -3,6 +3,7 @@ import json
 
 
 def followers_webhook():
+    print('Starting Followers Webhook...')
     url = 'https://api.twitch.tv/helix/webhooks/hub'
     body = json.dumps({
         "hub.callback": "https://api.sushix.tv/twitch/followers",
@@ -15,5 +16,6 @@ def followers_webhook():
         "Authorization": "Bearer qrdtg7k3wng14dfvznz0b1l3izgcot"
     }
 
+    print(f'Sending Webhook Request to {url} with body of {body}')
     response = requests.post(url, body, headers)
     print('Followers Webhook Response Code: ' + response.status_code)
