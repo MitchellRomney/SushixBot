@@ -8,7 +8,10 @@ def followers(request):
         return HttpResponse(request.GET["hub.challenge"], status=200)
 
     elif request.method == 'POST':
+        print(request.body)
         if "data" in request.body:
+            print(request.body["data"])
+            print(request.body["data"][0])
             payload = request.body["data"][0]
             print(f'New follower: {payload["from_name"]}, Twitch ID: {payload["from_id"]}')
 
