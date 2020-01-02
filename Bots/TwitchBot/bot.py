@@ -73,7 +73,7 @@ class TwitchBot(commands.Bot):
         response = requests.post(url, json={
             'query': query,
             'variables': {
-                'metric': 'loyalty_points'
+                'metric': 'loyaltyPoints'
             }
         }).json()
 
