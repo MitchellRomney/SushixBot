@@ -4,10 +4,15 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def followers(request):
+    print('Received /followers request!')
+
     if request.GET["hub.challenge"]:
+        print('Confirming /followers Webhook!')
         return HttpResponse(request.GET["hub.challenge"], status=200)
 
     elif request.method == 'POST':
+        print('Received POST request!')
+        print(request)
         print(request.body)
         if "data" in request.body:
             print(request.body["data"])
