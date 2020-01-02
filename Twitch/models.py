@@ -116,3 +116,9 @@ class TwitchChatMessage(models.Model):
     @property
     def short_message(self):
         return truncatechars(self.message, 100)
+
+
+class FollowEvent(models.Model):
+    from_user = models.ForeignKey(TwitchUser, related_name="TwitchEvent_FromUsers", on_delete=models.CASCADE, null=True, blank=True)
+    to_user = models.ForeignKey(TwitchUser, related_name="TwitchEvent_ToUsers", on_delete=models.CASCADE, null=True, blank=True)
+    followed_at = models.DateTimeField()

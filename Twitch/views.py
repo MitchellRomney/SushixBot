@@ -2,12 +2,14 @@ import json
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
+
+from Twitch.models import FollowEvent, TwitchUser
+from Twitch.functions.api import get_twitch_user
 
 
 @csrf_exempt
 def followers(request):
-    print(f'Received /followers {request.method} request!')
-
     if request.method == 'GET':
         if "hub.challenge" in request.GET:
             return HttpResponse(request.GET["hub.challenge"], status=200)
@@ -15,9 +17,28 @@ def followers(request):
     elif request.method == 'POST':
         body = json.loads(request.body)
         if "data" in body:
-            print(body["data"])
-            print(body["data"][0])
             payload = body["data"][0]
-            print(f'New follower: {payload["from_name"]}, Twitch ID: {payload["from_id"]}')
+
+            try:
+                from_user = TwitchUser.objects.get(twitch_id=payload["from_id"])
+            except TwitchUser.DoesNotExist:
+                from_user = get_twitch_user(twitch_id=payload["from_id"])
+
+            try:
+                to_user = TwitchUser.objects.get(twitch_id=payload["to_id"])
+            except TwitchUser.DoesNotExist:
+                to_user = get_twitch_user(twitch_id=payload["to_id"])
+
+            if FollowEvent.objects.filter(from_user=from_user, to_user=to_user).count() == 0:
+                from_user.loyalty_points += 10
+                from_user.save(update_fields=['loyalty_points', ])
+
+            followed_at = datetime.strptime(payload['followed_at'], '%Y-%m-%dT%H:%M:%SZ')
+
+            FollowEvent.objects.create(
+                from_user=from_user,
+                to_user=to_user,
+                followed_at=followed_at
+            )
 
     return HttpResponse(status=204)
