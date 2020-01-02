@@ -2,19 +2,25 @@ from celery.signals import celeryd_init
 
 from ItsSushix.celery import app
 from Twitch.functions.api import fetch_chatters, get_users, create_stream_minute_frame, fetch_followers, fetch_subscribers
-from Twitch.functions.webhooks import followers_webhook
+from Twitch.functions.webhooks import subscribe_followers_webhook, get_current_webhooks
 from Twitch.models import TwitchUser
 
 
 @celeryd_init.connect
-def setup_webhooks(sender=None, conf=None, **kwargs):
+def app_start(sender=None, conf=None, **kwargs):
 
     # Clean out old queue
     app.control.purge()
 
-    print('Celery Queue Purged...')
+    check_webhooks.delay()
 
-    followers_webhook()
+
+@app.task
+def check_webhooks():
+    existing_webhooks = get_current_webhooks()
+
+    if "Followers" not in existing_webhooks:
+        subscribe_followers_webhook()
 
 
 @app.task

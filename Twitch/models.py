@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.defaultfilters import truncatechars
+from django.contrib.postgres.fields import JSONField
 
 
 class Profile(models.Model):
@@ -31,6 +32,9 @@ class TwitchUser(models.Model):
     loyalty_points = models.IntegerField(default=0, blank=False, null=False)
     minutes_watched = models.IntegerField(default=0, blank=False, null=False)
     bot = models.BooleanField(default=False)
+    subscriber = models.BooleanField(default=False)
+    color = models.CharField(max_length=255, blank=True, null=True)
+    subscription_months = models.IntegerField(default=0, blank=False, null=False)
 
     date_modified = models.DateTimeField(auto_now=True, blank=False)
     date_created = models.DateTimeField(auto_now_add=True, blank=False)
@@ -104,6 +108,7 @@ class TwitchChatMessage(models.Model):
     twitch_user = models.ForeignKey(TwitchUser, related_name="TwitchChatMessage_TwitchUsers", on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField()
+    tags = JSONField(default=dict)
 
     date_modified = models.DateTimeField(auto_now=True, blank=False)
     date_created = models.DateTimeField(auto_now_add=True, blank=False)

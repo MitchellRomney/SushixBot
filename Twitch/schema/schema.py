@@ -1,5 +1,6 @@
 import graphene
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from Twitch.schema.types import TwitchUserType, GlobalStatisticsType, ProfileType, UserType
 from Twitch.schema.mutations import TwitchLogin, SetUserLoyalty
@@ -48,7 +49,15 @@ class Query(object):
     @staticmethod
     def resolve_leaderboard(self, info, **kwargs):
         metric = kwargs.get('metric')
-        return TwitchUser.objects.filter(bot=False).order_by(f'-{metric}')[:30]
+        if metric == 'loyaltyPoints':
+            return TwitchUser.objects.filter(loyalty_points__gt=0, bot=False).order_by('-loyalty_points')\
+                       .exclude(display_name='ItsSushix')[:30]
+        elif metric == 'minutesWatched':
+            return TwitchUser.objects.filter(minutes_watched__gt=0, bot=False).order_by('-minutes_watched')\
+                       .exclude(display_name='ItsSushix')[:30]
+        elif metric == 'subscriptionMonths':
+            return TwitchUser.objects.filter(subscription_months__gt=0, bot=False).order_by('-subscription_months')\
+                       .exclude(display_name='ItsSushix')[:30]
 
     @staticmethod
     def resolve_statistics(self, info, **kwargs):

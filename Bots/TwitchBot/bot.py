@@ -5,7 +5,6 @@ import requests
 
 from dotenv import load_dotenv
 from twitchio.ext import commands
-from twitchio.webhook import UserFollows
 
 import queries
 
@@ -31,13 +30,29 @@ class TwitchBot(commands.Bot):
         print(f'Ready | {self.nick}')
 
     async def event_message(self, message):
+        tags = {}
+        for tag in message.raw_data.split(';'):
+            tag_split = tag.split('=')
+            tag_key = tag_split[0]
+            tags[tag_key] = {}
+            if len(tag_split) > 1:
+                tag_values = tag_split[1].split(',')
+                for key in tag_values:
+                    if len(key.split('/')) > 1:
+                        tag_values_split = key.split('/')
+                        tags[tag_key][tag_values_split[0]] = tag_values_split[1]
+                    else:
+                        tags[tag_key] = key
+            else:
+                tags[tag_key] = ''
+
         payload = json.dumps({
             'type': 'message',
             'data': {
                 'message': message.content,
                 'user_id': message.author.id,
                 'username': message.author.name,
-                'raw': message.raw_data,
+                'tags': tags,
                 'timestamp': str(message.timestamp)
             }
         })
@@ -71,6 +86,30 @@ class TwitchBot(commands.Bot):
             message += f'#{position}. {user["displayName"]} ({user["loyaltyPoints"]})'
             if position != 10:
                 message += ', '
+        await ctx.send(f'{message}')
+
+    @commands.command(name='points')
+    async def points_command(self, ctx):
+        query = queries.query_twitch_user
+        url = 'https://api.sushix.tv/graphql'
+        response = requests.post(url, json={
+            'query': query,
+            'variables': {
+                'username': ctx.author.name
+            }
+        }).json()
+
+        if "twitchUser" in response['data']:
+            user = response['data']['twitchUser']
+            message = f'{user["displayName"]}, you have {user["loyaltyPoints"]} Sushi Rolls.'
+        else:
+            message = 'Cannot find user.'
+
+        await ctx.send(f'{message}')
+
+    @commands.command(name='commands')
+    async def commands_command(self, ctx):
+        message = 'Available Commands: !top, !points, !ally, !stack, !discord'
         await ctx.send(f'{message}')
 
 
