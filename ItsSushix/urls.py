@@ -10,5 +10,5 @@ from Twitch import views as TwitchViews
 urlpatterns = [
     path('', admin.site.urls),
     path('graphql', csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
-    path('/twitch/followers', TwitchViews.followers, name='twitch_followers')
+    path('twitch/followers', TwitchViews.followers, name='twitch_followers')
 ]

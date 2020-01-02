@@ -8,10 +8,11 @@ from Twitch.models import TwitchUser
 
 @celeryd_init.connect
 def setup_webhooks(sender=None, conf=None, **kwargs):
+
     # Clean out old queue
     app.control.purge()
 
-    # followers_webhook()
+    followers_webhook()
 
 
 @app.task
