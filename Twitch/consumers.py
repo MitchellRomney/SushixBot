@@ -44,6 +44,9 @@ class TwitchChatConsumer(WebsocketConsumer):
             if "subscriber" in message["tags"]["@badge-info"]:
                 twitch_user.subscription_months = message["tags"]["@badge-info"]["subscriber"]
                 update_fields.append('subscription_months')
+            elif "founder" in message["tags"]["@badge-info"]:
+                twitch_user.subscription_months = message["tags"]["@badge-info"]["founder"]
+                update_fields.append('subscription_months')
 
         if "color" in message["tags"]:
             twitch_user.color = message["tags"]["color"]
