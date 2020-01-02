@@ -1,6 +1,17 @@
-from SushixBot.celery import app
+from celery.signals import celeryd_init
+
+from ItsSushix.celery import app
 from Twitch.functions.api import fetch_chatters, get_users, create_stream_minute_frame, fetch_followers, fetch_subscribers
+from Twitch.functions.webhooks import followers_webhook
 from Twitch.models import TwitchUser
+
+
+@celeryd_init.connect
+def setup_webhooks(sender=None, conf=None, **kwargs):
+    # Clean out old queue
+    app.control.purge()
+
+    # followers_webhook()
 
 
 @app.task

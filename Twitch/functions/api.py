@@ -1,5 +1,5 @@
 import requests
-from SushixBot.settings import TWITCH_CLIENT_ID, SUSHIX_BEARER_TOKEN
+from ItsSushix.settings import TWITCH_CLIENT_ID, SUSHIX_BEARER_TOKEN
 from Twitch.models import *
 from Twitch.signals import new_frame
 

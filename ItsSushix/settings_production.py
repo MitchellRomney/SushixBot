@@ -1,5 +1,5 @@
 import dj_database_url
-from SushixBot.settings import *
+from ItsSushix.settings import *
 
 DATABASES['default'] = dj_database_url.config()
 
@@ -15,6 +15,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://www.sushix.tv',
     'https://sushix.tv',
     'http://sushix.tv',
+    'https://api.twitch.tv'
 ]
 
 DEBUG = False

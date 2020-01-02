@@ -40,7 +40,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
-ROOT_URLCONF = 'SushixBot.urls'
+ROOT_URLCONF = 'ItsSushix.urls'
 
 TEMPLATES = [
     {
@@ -58,7 +58,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'SushixBot.wsgi.application'
+WSGI_APPLICATION = 'ItsSushix.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -99,7 +99,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 
-ASGI_APPLICATION = 'SushixBot.routing.application'
+ASGI_APPLICATION = 'ItsSushix.routing.application'
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -147,5 +147,5 @@ CORS_ALLOW_HEADERS = [
 ]
 
 GRAPHENE = {
-    'SCHEMA': 'SushixBot.schema.schema',
+    'SCHEMA': 'ItsSushix.schema.schema',
 }
