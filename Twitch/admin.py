@@ -76,6 +76,10 @@ class StreamMinuteFrameAdmin(admin.ModelAdmin):
 class TwitchChatMessageAdmin(admin.ModelAdmin):
     model = TwitchChatMessage
 
+    search_fields = (
+        'twitch_user__display_name',
+    )
+
     list_display = (
         'id',
         'twitch_user',
