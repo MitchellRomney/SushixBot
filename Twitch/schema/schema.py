@@ -1,9 +1,10 @@
 import graphene
 from django.contrib.auth.models import User
+from django.db.models import Count, F
 
 from Twitch.schema.types import TwitchUserType, GlobalStatisticsType, ProfileType, UserType
 from Twitch.schema.mutations import TwitchLogin, SetUserLoyalty
-from Twitch.models import TwitchUser, Profile
+from Twitch.models import TwitchUser, Profile, TwitchChatMessage
 
 
 class Query(object):
@@ -49,14 +50,21 @@ class Query(object):
     def resolve_leaderboard(self, info, **kwargs):
         metric = kwargs.get('metric')
         if metric == 'loyaltyPoints':
-            return TwitchUser.objects.filter(loyalty_points__gt=0, bot=False).order_by('-loyalty_points')\
+            return TwitchUser.objects.filter(loyalty_points__gt=0, bot=False).order_by('-loyalty_points') \
                        .exclude(display_name='ItsSushix')[:30]
         elif metric == 'minutesWatched':
-            return TwitchUser.objects.filter(minutes_watched__gt=0, bot=False).order_by('-minutes_watched')\
+            return TwitchUser.objects.filter(minutes_watched__gt=0, bot=False).order_by('-minutes_watched') \
                        .exclude(display_name='ItsSushix')[:30]
         elif metric == 'subscriptionMonths':
-            return TwitchUser.objects.filter(subscription_months__gt=0, bot=False).order_by('-subscription_months')\
+            return TwitchUser.objects.filter(subscription_months__gt=0, bot=False).order_by('-subscription_months') \
                        .exclude(display_name='ItsSushix')[:30]
+        elif metric == 'messagesCount':
+            top_list = TwitchChatMessage.objects.annotate(twitch_id=F('twitch_user__twitch_id')).values('twitch_id').annotate(
+                messages=Count('id')).order_by('-messages')[:30]
+            id_list = []
+            for item in top_list:
+                id_list.append(item['twitch_id'])
+            return TwitchUser.objects.filter(twitch_id__in=id_list)
 
     @staticmethod
     def resolve_statistics(self, info, **kwargs):
