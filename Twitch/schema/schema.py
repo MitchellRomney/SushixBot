@@ -59,8 +59,8 @@ class Query(object):
             return TwitchUser.objects.filter(subscription_months__gt=0, bot=False).order_by('-subscription_months') \
                        .exclude(display_name='ItsSushix')[:30]
         elif metric == 'messagesCount':
-            top_list = TwitchChatMessage.objects.annotate(twitch_id=F('twitch_user__twitch_id')).values('twitch_id').annotate(
-                messages=Count('id')).order_by('-messages')[:30]
+            top_list = TwitchChatMessage.objects.filter(twitch_user__bot=False).annotate(twitch_id=F('twitch_user__twitch_id')) \
+                .values('twitch_id').annotate(messages=Count('id')).order_by('-messages')[:30]
             id_list = []
             for item in top_list:
                 id_list.append(item['twitch_id'])
