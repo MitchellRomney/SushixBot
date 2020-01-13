@@ -125,6 +125,21 @@ def get_users(username_list):
                 offline_image_url=user['offline_image_url'],
                 view_count=user['view_count']
             ))
+        else:
+            try:
+                existing_user = TwitchUser.objects.get(twitch_id=user['id'])
+                existing_user.login = user['login']
+                existing_user.display_name = user['display_name']
+                existing_user.type = user['type']
+                existing_user.broadcaster_type = user['broadcaster_type']
+                existing_user.description = user['description']
+                existing_user.profile_image_url = user['profile_image_url']
+                existing_user.offline_image_url = user['offline_image_url']
+                existing_user.view_count = user['view_count']
+                existing_user.save()
+
+            except TwitchUser.DoesNotExist:
+                pass
 
     if len(arr) > 0:
         TwitchUser.objects.bulk_create(arr)
