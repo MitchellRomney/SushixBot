@@ -2,7 +2,7 @@ from celery.signals import celeryd_init
 
 from ItsSushix.celery import app
 from Twitch.functions.api import fetch_chatters, get_users, create_stream_minute_frame, fetch_followers, fetch_subscribers
-from Twitch.functions.webhooks import subscribe_followers_webhook, get_current_webhooks
+from Twitch.functions.webhooks import subscribe_followers_webhook, get_current_webhooks, subscribe_subscriptions_webhook
 from Twitch.models import TwitchUser
 
 
@@ -21,6 +21,8 @@ def check_webhooks():
 
     if "Followers" not in existing_webhooks:
         subscribe_followers_webhook()
+    if "Subscriptions" not in existing_webhooks:
+        subscribe_subscriptions_webhook()
 
 
 @app.task

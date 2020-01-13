@@ -119,6 +119,15 @@ class TwitchChatMessage(models.Model):
 
 
 class FollowEvent(models.Model):
-    from_user = models.ForeignKey(TwitchUser, related_name="TwitchEvent_FromUsers", on_delete=models.CASCADE, null=True, blank=True)
-    to_user = models.ForeignKey(TwitchUser, related_name="TwitchEvent_ToUsers", on_delete=models.CASCADE, null=True, blank=True)
+    from_user = models.ForeignKey(TwitchUser, related_name="FollowEvent_FromUsers", on_delete=models.CASCADE, null=True, blank=True)
+    to_user = models.ForeignKey(TwitchUser, related_name="FollowEvent_ToUsers", on_delete=models.CASCADE, null=True, blank=True)
     followed_at = models.DateTimeField()
+
+
+class SubscriptionEvent(models.Model):
+    from_user = models.ForeignKey(TwitchUser, related_name="SubscriptionEvent_FromUsers", on_delete=models.CASCADE, null=True, blank=True)
+    to_user = models.ForeignKey(TwitchUser, related_name="SubscriptionEvent_ToUsers", on_delete=models.CASCADE, null=True, blank=True)
+    subscribed_at = models.DateTimeField()
+    cumulative_months = models.IntegerField(blank=True, null=True)
+    streak_months = models.IntegerField(blank=True, null=True)
+    sub_plan = models.CharField(max_length=5)
