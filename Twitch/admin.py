@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
-from Twitch.models import Profile, TwitchChatMessage, TwitchUser, TwitchVideo, StreamMinuteFrame, Game, FollowEvent
+from Twitch.models import Profile, TwitchChatMessage, TwitchUser, TwitchVideo, StreamMinuteFrame, Game, FollowEvent, \
+    SubscriptionEvent
 
 
 class FollowEventAdmin(admin.ModelAdmin):
@@ -10,6 +11,16 @@ class FollowEventAdmin(admin.ModelAdmin):
         'from_user',
         'to_user',
         'followed_at'
+    )
+
+
+class SubscriptionEventAdmin(admin.ModelAdmin):
+    model = SubscriptionEvent
+
+    list_display = (
+        'from_user',
+        'to_user',
+        'subscribed_at'
     )
 
 
@@ -107,4 +118,5 @@ admin.site.register(StreamMinuteFrame, StreamMinuteFrameAdmin)
 admin.site.register(TwitchChatMessage, TwitchChatMessageAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(FollowEvent, FollowEventAdmin)
+admin.site.register(SubscriptionEvent, SubscriptionEventAdmin)
 admin.site.unregister(Group)
