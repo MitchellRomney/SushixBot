@@ -55,6 +55,8 @@ def subscriptions(request):
         if "data" in body:
             payload = body["data"][0]
 
+            print(payload)
+
             try:
                 from_user = TwitchUser.objects.get(twitch_id=payload["event_data"]["user_id"])
             except TwitchUser.DoesNotExist:
